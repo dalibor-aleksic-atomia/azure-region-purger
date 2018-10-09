@@ -57,6 +57,29 @@ def delete_many(groups):
         delete(group)
 
 
+def delete_many_parallel(groups):
+    common.print_info("Deleting ResourceGroup in parallel started. May take couple of minutes")
+
+    # Start processes and redirect output to tmp files
+    processes = []
+    for group in groups:
+        group_name = group["name"]
+        p = common.process_start(f"az group delete --name {group_name} --yes")
+        common.print_info(f"Deleting ResourceGroup {group_name} started. PID={p.pid}")
+        processes.append(p)
+
+    # Wait for processes and print their outputs
+    common.print_info("Waiting to finish...")
+    for p in processes:
+        p.wait()
+        common.print_verbose(f"{p.pid} finished. Return status={p.returncode}")
+        for line in p.stdout.readlines():
+            common.print_info(line)
+        for line in p.stderr.readlines():
+            common.print_error(line)
+    common.print_info("Deleting ResourceGroups (parallel) finished")
+
+
 def delete_all_resources(group):
     group_name = group["name"]
     resource_list = resources.get_all(group_name)
@@ -64,6 +87,7 @@ def delete_all_resources(group):
     for res in resource_list:
         resources.delete(res)
     common.print_info(f"Delete resources in group {group_name} finished")
+
     """
     TODO: Check if resource deletion failed (ex. vhds locked)
           and try to unlock it.

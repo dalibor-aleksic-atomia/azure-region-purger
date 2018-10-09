@@ -57,3 +57,11 @@ def shell_exec(command: str, exit_on_fail: bool = True):
                     f"Stderr: {error.stderr.decode('utf-8')}")
         if exit_on_fail:
             exit(error.returncode)
+
+
+def process_start(command: str):
+    formatted_command = _format_command(command)
+    return subprocess.Popen(formatted_command,
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)

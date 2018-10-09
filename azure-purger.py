@@ -29,7 +29,7 @@ def main():
 
     # Delete resources created with new ResourceManager mode
     # https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-deployment-model
-    resource_groups.delete_many(standard_groups)
+    resource_groups.delete_many_parallel(standard_groups)
 
     # Delete resources created with classic (legacy) mode
     # TODO Consider: Delete Default-Storage-Group and recreate it empty
